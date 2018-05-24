@@ -14,6 +14,13 @@ const connection = new signalR.HubConnectionBuilder()
     .withUrl("http://localhost:62121/chathub")
     .build();
 
+connection.on("ReceiveSimpleMessage", (message) => {
+    const msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const li = document.createElement("li");
+    li.textContent = msg;
+    document.getElementById("messagesList").appendChild(li);
+});
+
 connection.on("ReceiveMessage", (user, message) => {
     const msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const encodedMsg = user + " says " + msg;
@@ -30,3 +37,10 @@ document.getElementById("sendButton").addEventListener("click", event => {
     connection.invoke("SendMessage", user, message).catch(err => console.error(err.toString()));
     event.preventDefault();
 });
+
+//document.getElementById("sendButton").addEventListener("click", event => {
+//    const user = document.getElementById("userInput").value;
+//    const message = document.getElementById("messageInput").value;
+//    connection.invoke("SendSimpleMessage", message).catch(err => console.error(err.toString()));
+//    event.preventDefault();
+//});
